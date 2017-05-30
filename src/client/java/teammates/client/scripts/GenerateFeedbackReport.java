@@ -49,7 +49,7 @@ public class GenerateFeedbackReport extends RemoteApiClient {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(fileContent);
             bw.close();
-
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
