@@ -31,7 +31,12 @@ import teammates.logic.core.InstructorsLogic;
 import teammates.logic.core.StudentsLogic;
 import teammates.ui.template.InstructorFeedbackResultsResponseRow;
 
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+
 public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
+    private final String other = "Other";
     private int numOfMsqChoices;
     private List<String> msqChoices;
     private boolean otherEnabled;
@@ -371,7 +376,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
 
             if (otherEnabled) {
                 String optionFragment =
-                        Templates.populateTemplate(optionFragmentTemplate, Slots.MSQ_CHOICE_VALUE, "Other");
+                        Templates.populateTemplate(optionFragmentTemplate, Slots.MSQ_CHOICE_VALUE, other);
                 optionListHtml.append(optionFragment);
             }
 
@@ -412,7 +417,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
         }
 
         if (otherEnabled) {
-            answerFrequency.put("Other", 0);
+            answerFrequency.put(other, 0);
         }
 
         int numChoicesSelected = 0;
@@ -424,11 +429,11 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
             String otherAnswer = "";
 
             if (isOtherOptionAnswer) {
-                if (!answerFrequency.containsKey("Other")) {
-                    answerFrequency.put("Other", 0);
+                if (!answerFrequency.containsKey(other)) {
+                    answerFrequency.put(other, 0);
                 }
 
-                answerFrequency.put("Other", answerFrequency.get("Other") + 1);
+                answerFrequency.put(other, answerFrequency.get(other) + 1);
 
                 numChoicesSelected++;
                 // remove other answer temporarily to calculate stats for other options
@@ -491,7 +496,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
         }
 
         if (otherEnabled) {
-            answerFrequency.put("Other", 0);
+            answerFrequency.put(other, 0);
         }
 
         int numChoicesSelected = 0;
@@ -504,10 +509,10 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
             String otherAnswer = "";
 
             if (isOtherOptionAnswer) {
-                if (!answerFrequency.containsKey("Other")) {
-                    answerFrequency.put("Other", 0);
+                if (!answerFrequency.containsKey(other)) {
+                    answerFrequency.put(other, 0);
                 }
-                answerFrequency.put("Other", answerFrequency.get("Other") + 1);
+                answerFrequency.put(other, answerFrequency.get(other) + 1);
 
                 numChoicesSelected++;
                 // remove other answer temporarily to calculate stats for other options
