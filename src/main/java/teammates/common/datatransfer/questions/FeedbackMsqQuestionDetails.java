@@ -46,7 +46,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
         super(FeedbackQuestionType.MSQ);
 
         this.numOfMsqChoices = 0;
-        this.msqChoices = new ArrayList<String>();
+        this.msqChoices = new ArrayList<>();
         this.otherEnabled = false;
         this.generateOptionsFor = FeedbackParticipantType.NONE;
     }
@@ -55,8 +55,8 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
     public boolean extractQuestionDetails(
             Map<String, String[]> requestParameters,
             FeedbackQuestionType questionType) {
-        int numOfMsqChoices = 0;
-        List<String> msqChoices = new LinkedList<String>();
+        int numberOfMsqChoices = 0;
+        List<String> msqChoicesList = new LinkedList<String>();
         boolean msqOtherEnabled = false;
 
         String otherOptionFlag =
@@ -82,12 +82,12 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
                         HttpRequestHelper.getValueFromParamMap(
                                 requestParameters, Const.ParamsNames.FEEDBACK_QUESTION_MSQCHOICE + "-" + i);
                 if (msqChoice != null && !msqChoice.trim().isEmpty()) {
-                    msqChoices.add(msqChoice);
-                    numOfMsqChoices++;
+                    msqChoicesList.add(msqChoice);
+                    numberOfMsqChoices++;
                 }
             }
 
-            setMsqQuestionDetails(numOfMsqChoices, msqChoices, msqOtherEnabled);
+            setMsqQuestionDetails(numberOfMsqChoices, msqChoicesList, msqOtherEnabled);
         } else {
             setMsqQuestionDetails(FeedbackParticipantType.valueOf(generatedMsqOptions));
         }
