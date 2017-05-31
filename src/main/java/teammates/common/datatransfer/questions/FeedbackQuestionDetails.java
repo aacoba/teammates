@@ -46,6 +46,65 @@ public abstract class FeedbackQuestionDetails {
                                 boolean sessionIsOpen, int qnIdx, int responseIdx, String courseId,
                                 int totalNumRecipients);
 
+    protected List<String> getOptionStrings(String courseId, FeedbackParticipantType generateOptionsFor,
+                                            List<String> mcqChoices) {
+        List<String> optionList = new ArrayList<>();
+
+        switch (generateOptionsFor) {
+            case NONE:
+                optionList = mcqChoices;
+                break;
+            case STUDENTS:
+                addStudentsForCourse(courseId, optionList);
+                break;
+            case TEAMS:
+                addTeamsForCourse(courseId, optionList);
+                break;
+            case INSTRUCTORS:
+                addInstructorsForCourse(courseId, optionList);
+                break;
+            default:
+                Assumption.fail("Trying to generate options for neither students, teams nor instructors");
+                break;
+        }
+        return optionList;
+    }
+
+    private void addStudentsForCourse(String courseId, List<String> optionList) {
+        List<StudentAttributes> studentList = StudentsLogic.inst().getStudentsForCourse(courseId);
+
+        for (StudentAttributes student : studentList) {
+            optionList.add(student.name + " (" + student.team + ")");
+        }
+
+        Collections.sort(optionList);
+    }
+
+    private void addTeamsForCourse(String courseId, List<String> optionList) {
+        try {
+            List<TeamDetailsBundle> teamList = CoursesLogic.inst().getTeamsForCourse(courseId);
+
+            for (TeamDetailsBundle team : teamList) {
+                optionList.add(team.name);
+            }
+
+            Collections.sort(optionList);
+        } catch (EntityDoesNotExistException e) {
+            Assumption.fail("Course disappeared");
+        }
+    }
+
+    private void addInstructorsForCourse(String courseId, List<String> optionList) {
+        List<InstructorAttributes> instructorList =
+                InstructorsLogic.inst().getInstructorsForCourse(courseId);
+
+        for (InstructorAttributes instructor : instructorList) {
+            optionList.add(instructor.name);
+        }
+
+        Collections.sort(optionList);
+    }
+
     public abstract String getQuestionSpecificEditFormHtml(int questionNumber);
 
     public abstract String getNewQuestionSpecificEditFormHtml();
