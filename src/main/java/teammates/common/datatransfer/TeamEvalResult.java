@@ -1,11 +1,11 @@
 package teammates.common.datatransfer;
 
-import java.util.Arrays;
-import java.util.List;
-
 import teammates.common.util.Const;
 import teammates.common.util.Logger;
 import teammates.common.util.StringHelper;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class represents an feedback contribution question result for a given team.
@@ -20,6 +20,9 @@ public class TeamEvalResult {
     /** did Not SuBmit. */
     public static final int NSB = Const.POINTS_NOT_SUBMITTED;
     private static final Logger log = Logger.getLogger();
+
+    private static final double EPSILON = 0.00000001;
+
 
     /** submission values originally from students of the team. */
     public int[][] claimed;
@@ -96,18 +99,27 @@ public class TeamEvalResult {
      * Replaces all missing points (for various reasons such as 'not sure' or
      * 'did not submit') with NA.
      */
+//    int points = input[i][j];
+//    boolean pointsNotGiven = points == Const.POINTS_NOT_SUBMITTED
+//            || points == Const.POINTS_NOT_SURE;
+//    output[i][j] = pointsNotGiven ? NA : points;
+//
     private int[][] sanitizeInput(int[][] input) {
         int teamSize = input.length;
         int[][] output = new int[teamSize][teamSize];
         for (int i = 0; i < teamSize; i++) {
             for (int j = 0; j < teamSize; j++) {
-                int points = input[i][j];
-                boolean pointsNotGiven = points == Const.POINTS_NOT_SUBMITTED
-                                         || points == Const.POINTS_NOT_SURE;
-                output[i][j] = pointsNotGiven ? NA : points;
+                output = sanitizeIndividualInputByPointsNotGiven(input[i][j]);
             }
         }
         return output;
+    }
+
+    private int sanitizeIndividualInputByPointsNotGiven(int input) {
+        int points = input;
+        boolean pointsNotGiven = points == Const.POINTS_NOT_SUBMITTED
+                                 || points == Const.POINTS_NOT_SURE;
+        return pointsNotGiven ? NA : points;
     }
 
     private static double[][] calculatePeerContributionRatio(double[][] input) {
@@ -157,13 +169,18 @@ public class TeamEvalResult {
 
         double sumOfPerceived = sum(filteredPerceived);
         double sumOfActual = sum(filteredSanitizedActual);
-
         // if the student did not submit
-        if (sumOfActual == NA) {
+        if (Math.abs(sumOfActual - NA) < EPSILON) {
             sumOfActual = sumOfPerceived;
         }
 
-        double factor = sumOfActual / sumOfPerceived;
+        double factor;
+        if(sumOfPerceived != 0) {
+            factor = sumOfActual / sumOfPerceived;
+        }
+        else {
+            factor = sumOfActual;
+        }
 
         return doubleToInt(multiplyByFactor(factor,
                 normalizedAveragePerceivedAsDouble));
@@ -187,11 +204,15 @@ public class TeamEvalResult {
     }
 
     private static double[][] multiplyByFactor(double factor, double[][] input) {
+
         int teamSize = input.length;
+
         double[][] output = new double[teamSize][teamSize];
+
         for (int i = 0; i < teamSize; i++) {
             output[i] = multiplyByFactor(factor, input[i]);
         }
+
         return output;
     }
 
@@ -199,25 +220,33 @@ public class TeamEvalResult {
         int teamSize = input.length;
         double[] output = new double[teamSize];
         for (int j = 0; j < teamSize; j++) {
-            double value = input[j];
-            if (isSpecialValue((int) value)) {
-                output[j] = value;
-            } else {
-                output[j] = factor == 0 ? value : value * factor;
-            }
+            output[j] = multiplyIndividualTeamByFactor(inpunt[j]);
         }
         return output;
     }
 
-    public static double[] purgeValuesCorrespondingToSpecialValuesInFilter(
-            double[] filterArray, double[] valueArray) {
+    private static double multiplyIndividualTeamByFactor(double value) {
+        double returnValue;
+        if (isSpecialValue((int) value)) {
+            returnValue = value;
+        } else {
+            retturnValue = Math.abs(factor - 0) < EPSILON ? value : value * factor;
+        }
+        return returnValue;
+    }
+
+    public static double[] purgeValuesCorrespondingToSpecialValuesInFilter(double[] filterArray, double[] valueArray) {
         double[] returnValue = new double[filterArray.length];
         for (int i = 0; i < filterArray.length; i++) {
-            int filterValue = (int) filterArray[i];
-            boolean isSpecialValue = !isSanitized(filterValue)
-                    || filterValue == NA;
-            returnValue[i] = isSpecialValue ? NA : valueArray[i];
+            returnValue[i] = purgeIndividualValueCorrespondingToSpecialValuesInFilter(filterArray[i], valueArray[i], returnValue, i);
         }
+        return returnValue;
+    }
+
+    private static double purgeIndividualValueCorrespondingToSpecialValuesInFilter(double filterFromArray, double valueFromArray){
+        int filterValue = (int) filterFromArray;
+        boolean isSpecialValue = !isSanitized(filterValue) || filterValue == NA;
+        double returnValue = isSpecialValue ? NA : valueFromArray;
         return returnValue;
     }
 
@@ -232,8 +261,8 @@ public class TeamEvalResult {
         double sum = NA;
         for (double value : input) {
 
-            if (value != NA) {
-                sum = sum == NA ? value : sum + value;
+            if (!Math.abs(value - NA) < EPSILON) {
+                sum = Math.abs(sum - NA) < EPSILON ? value : sum + value;
             }
         }
         return sum;
@@ -277,8 +306,11 @@ public class TeamEvalResult {
     }
 
     private static double calculateFactor(double[] input) {
+        double factor;
+
         double actualSum = 0;
         int count = 0;
+
         for (double value : input) {
             int valueAsInt = (int) value;
             if (isSpecialValue(valueAsInt)) {
@@ -288,8 +320,22 @@ public class TeamEvalResult {
             count++;
         }
 
+        factor = calculateFactorByIdealSum(actualSum, count);
+
+        return factor;
+    }
+
+    private static double calculateFactorByIdealSum(double actualSum, int count) {
+        double factor;
         double idealSum = count * 100.0;
-        double factor = actualSum == 0 ? 0 : idealSum / actualSum;
+
+        if(actualSum != 0) {
+             factor = Math.abs(actualSum - 0) < EPSILON ? 0 : idealSum / actualSum;
+        }
+        else {
+            factor = Math.abs(actualSum - 0) < EPSILON ? 0 : idealSum;
+        }
+
         log.fine("Factor = " + idealSum + "/" + actualSum + " = " + factor);
         return factor;
     }
@@ -349,7 +395,7 @@ public class TeamEvalResult {
             double value = array[columnIndex];
 
             values.append(value).append(' ');
-            if (value == NA) {
+            if (Math.abs(value - NA) < EPSILON) {
                 continue;
             }
             sum += value;
@@ -373,22 +419,30 @@ public class TeamEvalResult {
     }
 
     public static String pointsToString(double[][] array) {
+
         StringBuilder returnValue = new StringBuilder();
+
         boolean isSquareArray = array.length == array[0].length;
         int teamSize = (array.length - 1) / 3;
-        int firstDividerLocation = teamSize - 1;
-        int secondDividerLocation = teamSize * 2 - 1;
-        int thirdDividerLocation = secondDividerLocation + 1;
+
+        PointDefinition pointDefinition = new PointDefinition(isSquareArray, teamSize);
+
+        return getString(array, returnValue, pointDefinition);
+    }
+
+    private static String getString(double[][] array, StringBuilder returnValue, teammates.common.datatransfer.TeamEvalResult.PointDefinition pointDefinition) {
+
         for (int i = 0; i < array.length; i++) {
             returnValue.append(Arrays.toString(array[i])).append(Const.EOL);
-            if (isSquareArray) {
+            if (pointDefinition.isSquareArray) {
                 continue;
             }
-            if (i == firstDividerLocation || i == secondDividerLocation || i == thirdDividerLocation) {
+            if (i == pointDefinition.firstDividerLocation || i == pointDefinition.secondDividerLocation || i == pointDefinition.thirdDividerLocation) {
                 returnValue.append("=======================")
                            .append(Const.EOL);
             }
         }
+
         return replaceMagicNumbers(returnValue.toString());
     }
 
@@ -443,7 +497,7 @@ public class TeamEvalResult {
     private static void verify(String message, boolean condition) {
         // TODO: replace with Assumption.assert*
         if (!condition) {
-            throw new RuntimeException("Internal assertion failuer : "
+            throw new InternalAssertionException("Internal assertion failuer : "
                     + message);
         }
     }
