@@ -51,7 +51,7 @@ public class FeedbackSessionResultsBundle {
     private List<FeedbackResponseAttributes> actualResponses;
 
     // For contribution questions.
-    // Key is questionId, value is a map of student email to StudentResultSumary
+    // Key is questionId, value is a map of student email to StudentResultSummary
     private Map<String, Map<String, StudentResultSummary>> contributionQuestionStudentResultSummary =
             new HashMap<>();
     // Key is questionId, value is a map of team name to TeamEvalResult
@@ -1279,10 +1279,10 @@ public class FeedbackSessionResultsBundle {
 
         if (isParticipantIdentifierStudent(giverParticipantIdentifier)) {
             StudentAttributes student = getRoster().getStudentForEmail(giverParticipantIdentifier);
-            return getPossibleRecipients(fqa, student);
+            return getPossibleRecipientsByStudentAttributes(fqa, student);
         } else if (isParticipantIdentifierInstructor(giverParticipantIdentifier)) {
             InstructorAttributes instructor = getRoster().getInstructorForEmail(giverParticipantIdentifier);
-            return getPossibleRecipients(fqa, instructor);
+            return getPossibleRecipientsByInstructorAttributes(fqa, instructor);
         } else {
             return getPossibleRecipientsForTeam(fqa, giverParticipantIdentifier);
         }
@@ -1293,8 +1293,8 @@ public class FeedbackSessionResultsBundle {
      * @return a list of possible recipients that can receive a response from giver specified by
      *         the instructorGiver
      */
-    private List<String> getPossibleRecipients(FeedbackQuestionAttributes fqa,
-                                               InstructorAttributes instructorGiver) {
+    private List<String> getPossibleRecipientsByInstructorAttributes(FeedbackQuestionAttributes fqa,
+                                                                     InstructorAttributes instructorGiver) {
         FeedbackParticipantType recipientType = fqa.recipientType;
         List<String> possibleRecipients = new ArrayList<>();
 
@@ -1331,8 +1331,8 @@ public class FeedbackSessionResultsBundle {
      * @return a list of possible recipients that can receive a response from giver specified by
      *         the studentGiver
      */
-    private List<String> getPossibleRecipients(FeedbackQuestionAttributes fqa,
-                                               StudentAttributes studentGiver) {
+    private List<String> getPossibleRecipientsByStudentAttributes(FeedbackQuestionAttributes fqa,
+                                                                  StudentAttributes studentGiver) {
         FeedbackParticipantType recipientType = fqa.recipientType;
         List<String> possibleRecipients = new ArrayList<>();
 
@@ -1397,9 +1397,7 @@ public class FeedbackSessionResultsBundle {
             break;
         case OWN_TEAM_MEMBERS_INCLUDING_SELF:
             if (getRosterTeamNameMembersTable().containsKey(givingTeam)) {
-                Set<String> studentEmailsToNames = getRosterTeamNameMembersTable().get(givingTeam);
-                possibleRecipients = new ArrayList<>(studentEmailsToNames);
-                Collections.sort(possibleRecipients);
+                possibleRecipients = setAndSortPossibleRecipients(givingTeam);
             }
             break;
         case NONE:
@@ -1410,6 +1408,13 @@ public class FeedbackSessionResultsBundle {
             break;
         }
 
+        return possibleRecipients;
+    }
+    
+    private List<String> setAndSortPossibleRecipients(String givingTeam) {
+        Set<String> studentEmailsToNames = getRosterTeamNameMembersTable().get(givingTeam);
+        List<String> possibleRecipients = new ArrayList<>(studentEmailsToNames);
+        Collections.sort(possibleRecipients);
         return possibleRecipients;
     }
 
