@@ -189,7 +189,7 @@ public class StudentCommentsPageData extends PageData {
             FeedbackQuestionAttributes feedbackQuestion = responseEntries.getKey();
             int questionNumber = feedbackQuestion.questionNumber;
             String questionText = feedbackResultBundle.getQuestionText(feedbackQuestion.getId());
-            Map<String, FeedbackQuestionAttributes> questions = feedbackResultBundle.questions;
+            Map<String, FeedbackQuestionAttributes> questions = feedbackResultBundle.getQuestions();
 
             FeedbackQuestionAttributes question = questions.get(feedbackQuestion.getId());
             FeedbackQuestionDetails questionDetails = question.getQuestionDetails();
@@ -236,7 +236,7 @@ public class StudentCommentsPageData extends PageData {
             FeedbackSessionResultsBundle feedbackResultBundle, FeedbackResponseAttributes responseEntry) {
         List<FeedbackResponseCommentRow> feedbackResponseCommentRows = new ArrayList<FeedbackResponseCommentRow>();
         List<FeedbackResponseCommentAttributes> frcList =
-                feedbackResultBundle.responseComments.get(responseEntry.getId());
+                feedbackResultBundle.getResponseComments().get(responseEntry.getId());
 
         for (FeedbackResponseCommentAttributes frc : frcList) {
             FeedbackResponseCommentRow feedbackResponseCommentRow =

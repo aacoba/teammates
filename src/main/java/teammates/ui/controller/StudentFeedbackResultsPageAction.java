@@ -42,7 +42,7 @@ public class StudentFeedbackResultsPageAction extends Action {
                                                   + " does not exist in " + courseId + ".");
         }
 
-        if (!data.getBundle().feedbackSession.isPublished()) {
+        if (!data.getBundle().getFeedbackSession().isPublished()) {
             throw new UnauthorizedAccessException("This feedback session is not yet visible.");
         }
 

@@ -75,7 +75,7 @@ public class StudentCommentsPageDataTest extends BaseTestCase {
         Map<String, FeedbackSessionResultsBundle> feedbackResultBundles =
                 new HashMap<String, FeedbackSessionResultsBundle>();
         FeedbackSessionResultsBundle bundle = getSingleFeedbackSessionResultsBundle(roster);
-        feedbackResultBundles.put(bundle.feedbackSession.getFeedbackSessionName(), bundle);
+        feedbackResultBundles.put(bundle.getFeedbackSession().getFeedbackSessionName(), bundle);
 
         data.init(courseId, courseName, coursePaginationList, comments, roster, studentEmail, feedbackResultBundles);
 
@@ -115,7 +115,7 @@ public class StudentCommentsPageDataTest extends BaseTestCase {
 
     private FeedbackSessionRow getFeedbackSessionRow(FeedbackSessionResultsBundle bundle) {
         List<QuestionTable> questionTables = new ArrayList<QuestionTable>();
-        FeedbackSessionAttributes session = bundle.feedbackSession;
+        FeedbackSessionAttributes session = bundle.getFeedbackSession();
         Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>> questionToResponsesMap =
                 bundle.getQuestionResponseMap();
         for (Map.Entry<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>> entry
@@ -126,7 +126,7 @@ public class StudentCommentsPageDataTest extends BaseTestCase {
             for (FeedbackResponseAttributes response : responses) {
                 List<FeedbackResponseCommentRow> feedbackResponseCommentRows = new ArrayList<FeedbackResponseCommentRow>();
                 List<FeedbackResponseCommentAttributes> responseComments =
-                        bundle.responseComments.get(response.getId());
+                        bundle.getResponseComments().get(response.getId());
                 for (FeedbackResponseCommentAttributes responseComment : responseComments) {
                     FeedbackResponseCommentRow feedbackResponseCommentRow =
                             new FeedbackResponseCommentRow(responseComment, responseComment.giverEmail);

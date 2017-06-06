@@ -165,7 +165,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
             return "";
         }
 
-        String currentUserTeam = bundle.emailTeamNameTable.get(studentEmail);
+        String currentUserTeam = bundle.getEmailTeamNameTable().get(studentEmail);
 
         List<FeedbackResponseAttributes> actualResponses = getActualResponses(question, bundle);
 
@@ -255,7 +255,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
         boolean hideRecipient = false;
         FeedbackParticipantType type = question.recipientType;
         for (FeedbackResponseAttributes response : actualResponses) {
-            if (!bundle.visibilityTable.get(response.getId())[1]
+            if (!bundle.getVisibilityTable().get(response.getId())[1]
                     && type != FeedbackParticipantType.SELF
                     && type != FeedbackParticipantType.NONE) {
                 hideRecipient = true;
@@ -267,8 +267,8 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
         for (Map.Entry<String, StudentResultSummary> entry : studentResults.entrySet()) {
             StudentResultSummary summary = entry.getValue();
             String email = entry.getKey();
-            String name = bundle.roster.getStudentForEmail(email).name;
-            String team = bundle.roster.getStudentForEmail(email).team;
+            String name = bundle.getRoster().getStudentForEmail(email).name;
+            String team = bundle.getRoster().getStudentForEmail(email).team;
 
             List<String> teamEmails = teamMembersEmail.get(team);
             TeamEvalResult teamResult = teamResults.get(team);
@@ -345,7 +345,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
 
         FeedbackParticipantType type = question.recipientType;
         for (FeedbackResponseAttributes response : actualResponses) {
-            if (!bundle.visibilityTable.get(response.getId())[1]
+            if (!bundle.getVisibilityTable().get(response.getId())[1]
                     && type != FeedbackParticipantType.SELF
                     && type != FeedbackParticipantType.NONE) {
                 hideRecipient = true;
@@ -359,8 +359,8 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
         for (Map.Entry<String, StudentResultSummary> entry : studentResults.entrySet()) {
             StudentResultSummary summary = entry.getValue();
             String email = entry.getKey();
-            String name = bundle.roster.getStudentForEmail(email).name;
-            String team = bundle.roster.getStudentForEmail(email).team;
+            String name = bundle.getRoster().getStudentForEmail(email).name;
+            String team = bundle.getRoster().getStudentForEmail(email).team;
 
             List<String> teamEmails = teamMembersEmail.get(team);
             TeamEvalResult teamResult = teamResults.get(team);
@@ -420,7 +420,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
 
     private List<String> getTeamNames(FeedbackSessionResultsBundle bundle) {
         List<String> teamNames = new ArrayList<String>();
-        for (Set<String> teamNamesForSection : bundle.sectionTeamNameTable.values()) {
+        for (Set<String> teamNamesForSection : bundle.getSectionTeamNameTable().values()) {
             teamNames.addAll(teamNamesForSection);
         }
         Collections.sort(teamNames);
@@ -542,7 +542,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
             teamResponses.put(teamName, new ArrayList<FeedbackResponseAttributes>());
         }
         for (FeedbackResponseAttributes response : responses) {
-            String team = bundle.emailTeamNameTable.get(response.giver);
+            String team = bundle.getEmailTeamNameTable().get(response.giver);
             if (teamResponses.containsKey(team)) {
                 teamResponses.get(team).add(response);
             }
@@ -554,7 +554,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
             FeedbackSessionResultsBundle bundle, List<String> teamNames) {
         Map<String, List<String>> teamMembersEmail = new LinkedHashMap<String, List<String>>();
         for (String teamName : teamNames) {
-            List<String> memberEmails = new ArrayList<String>(bundle.rosterTeamNameMembersTable.get(teamName));
+            List<String> memberEmails = new ArrayList<String>(bundle.getRosterTeamNameMembersTable().get(teamName));
             Collections.sort(memberEmails);
             teamMembersEmail.put(teamName, memberEmails);
         }
@@ -581,7 +581,7 @@ public class FeedbackContributionQuestionDetails extends FeedbackQuestionDetails
         String questionId = question.getId();
         //Get all actual responses for this question.
         responses = new ArrayList<FeedbackResponseAttributes>();
-        for (FeedbackResponseAttributes response : bundle.actualResponses) {
+        for (FeedbackResponseAttributes response : bundle.getActualResponses()) {
             if (response.feedbackQuestionId.equals(questionId)) {
                 responses.add(response);
             }

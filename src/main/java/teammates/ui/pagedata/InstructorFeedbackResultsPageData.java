@@ -139,15 +139,15 @@ public class InstructorFeedbackResultsPageData extends PageData {
         this.groupByTeam = groupByTeam;
         this.isMissingResponsesShown = isMissingResponsesShown;
 
-        for (FeedbackQuestionAttributes question : bundle.questions.values()) {
+        for (FeedbackQuestionAttributes question : bundle.getQuestions().values()) {
             FeedbackQuestionDetails questionDetails = question.getQuestionDetails();
             questionToDetailsMap.put(question, questionDetails);
         }
 
         this.sections = getSectionsFromBundle();
 
-        displayableFsName = sanitizeForHtml(bundle.feedbackSession.getFeedbackSessionName());
-        displayableCourseId = sanitizeForHtml(bundle.feedbackSession.getCourseId());
+        displayableFsName = sanitizeForHtml(bundle.getFeedbackSession().getFeedbackSessionName());
+        displayableCourseId = sanitizeForHtml(bundle.getFeedbackSession().getCourseId());
     }
 
     private List<String> getSectionsFromBundle() {
@@ -184,7 +184,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
 
         // results page to be loaded by ajax
         if (isAllSectionsSelected()) {
-            if (bundle.isComplete) {
+            if (bundle.isComplete()) {
                 buildSectionPanelsForForAjaxLoading(getSections());
             } else {
                 buildSectionPanelWithErrorMessage();
@@ -195,7 +195,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
 
         // Note that if the page needs to load by ajax, then responses may be empty too,
         // therefore the check for ajax to come before this
-        if (bundle.responses.isEmpty()) {
+        if (bundle.getResponses().isEmpty()) {
             // no responses, nothing to initialize
             return;
         }
@@ -470,7 +470,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
             FeedbackResponseAttributes response = giverResponses.get(responseIndex);
 
             String questionId = response.feedbackQuestionId;
-            FeedbackQuestionAttributes question = bundle.questions.get(questionId);
+            FeedbackQuestionAttributes question = bundle.getQuestions().get(questionId);
             String questionText = bundle.getQuestionText(questionId);
 
             int giverIndex = viewType.isPrimaryGroupingOfGiverType() ? primaryParticipantIndex
@@ -628,7 +628,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
     }
 
     private boolean isTeamVisible(String team) {
-        return bundle.rosterTeamNameMembersTable.containsKey(team);
+        return bundle.getRosterTeamNameMembersTable().containsKey(team);
     }
 
     private void buildMissingTeamAndParticipantPanelsForSection(
@@ -807,7 +807,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
             List<InstructorFeedbackResultsQuestionTable> statisticsTablesForTeam =
                     new ArrayList<InstructorFeedbackResultsQuestionTable>();
 
-            for (FeedbackQuestionAttributes question : bundle.questions.values()) {
+            for (FeedbackQuestionAttributes question : bundle.getQuestions().values()) {
                 if (!responsesGroupedByTeam.get(team).containsKey(question)) {
                     continue;
                 }
@@ -1347,9 +1347,9 @@ public class InstructorFeedbackResultsPageData extends PageData {
                                                                             String giverIdentifier, String className,
                                                                             String buttonText) {
 
-        boolean isGiverInstructorOfCourse = bundle.roster.isInstructorOfCourse(giverIdentifier);
+        boolean isGiverInstructorOfCourse = bundle.getRoster().isInstructorOfCourse(giverIdentifier);
         boolean isGiverVisibleStudentOrTeam = isTeamVisible(giverIdentifier)
-                                              || bundle.roster.isStudentInCourse(giverIdentifier);
+                                              || bundle.getRoster().isStudentInCourse(giverIdentifier);
 
         if (!isGiverVisibleStudentOrTeam && !isGiverInstructorOfCourse) {
             return null;
@@ -1397,7 +1397,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
 
     private FeedbackSessionPublishButton getInstructorFeedbackSessionPublishAndUnpublishAction() {
         return new FeedbackSessionPublishButton(this,
-                                                bundle.feedbackSession,
+                bundle.getFeedbackSession(),
                                                 Const.ActionURIs.INSTRUCTOR_FEEDBACKS_PAGE,
                                                 instructor,
                                                 "btn-primary btn-block");
@@ -1406,7 +1406,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
     private List<FeedbackResponseCommentRow> buildResponseComments(String giverName, String recipientName,
             FeedbackQuestionAttributes question, FeedbackResponseAttributes response) {
         List<FeedbackResponseCommentRow> comments = new ArrayList<FeedbackResponseCommentRow>();
-        List<FeedbackResponseCommentAttributes> frcAttributesList = bundle.responseComments.get(response.getId());
+        List<FeedbackResponseCommentAttributes> frcAttributesList = bundle.getResponseComments().get(response.getId());
         if (frcAttributesList != null) {
             for (FeedbackResponseCommentAttributes frcAttributes : frcAttributesList) {
                 comments.add(buildResponseComment(giverName, recipientName, question, response, frcAttributes));
@@ -1525,7 +1525,7 @@ public class InstructorFeedbackResultsPageData extends PageData {
 
     private Map<String, InstructorFeedbackResultsModerationButton> buildModerateButtonsForNoResponsePanel() {
         Map<String, InstructorFeedbackResultsModerationButton> moderationButtons = new HashMap<>();
-        for (String giverIdentifier : bundle.responseStatus.emailNameTable.keySet()) {
+        for (String giverIdentifier : bundle.getResponseStatus().emailNameTable.keySet()) {
             boolean isStudent = bundle.isParticipantIdentifierStudent(giverIdentifier);
 
             if (!isStudent) {
@@ -1539,8 +1539,8 @@ public class InstructorFeedbackResultsPageData extends PageData {
             InstructorFeedbackResultsModerationButton moderationButton =
                     new InstructorFeedbackResultsModerationButton(!isAllowedToModerate, "btn btn-default btn-xs",
                                                                   giverIdentifier,
-                                                                  bundle.feedbackSession.getCourseId(),
-                                                                  bundle.feedbackSession.getFeedbackSessionName(),
+                                                                  bundle.getFeedbackSession().getCourseId(),
+                                                                  bundle.getFeedbackSession().getFeedbackSessionName(),
                                                                   null, "Submit Responses", moderateFeedbackLink);
             moderationButtons.put(giverIdentifier, moderationButton);
 
@@ -1634,14 +1634,14 @@ public class InstructorFeedbackResultsPageData extends PageData {
 
     private String getInstructorFeedbackSessionEditLink() {
         return instructor.isAllowedForPrivilege(Const.ParamsNames.INSTRUCTOR_PERMISSION_MODIFY_SESSION)
-               ? getInstructorFeedbackEditLink(bundle.feedbackSession.getCourseId(),
-                                                      bundle.feedbackSession.getFeedbackSessionName())
+               ? getInstructorFeedbackEditLink(bundle.getFeedbackSession().getCourseId(),
+                                                      bundle.getFeedbackSession().getFeedbackSessionName())
                : null;
     }
 
     private String getInstructorFeedbackSessionResultsLink() {
-        return getInstructorFeedbackResultsLink(bundle.feedbackSession.getCourseId(),
-                                                bundle.feedbackSession.getFeedbackSessionName());
+        return getInstructorFeedbackResultsLink(bundle.getFeedbackSession().getCourseId(),
+                                                bundle.getFeedbackSession().getFeedbackSessionName());
     }
 
     private boolean isAllowedToModerate(InstructorAttributes instructor, String sectionName, String feedbackSessionName) {
@@ -1656,20 +1656,20 @@ public class InstructorFeedbackResultsPageData extends PageData {
     // TODO: place below getter methods for template objects in some init method common to all views
     public InstructorFeedbackResultsSessionPanel getSessionPanel() {
         return new InstructorFeedbackResultsSessionPanel(
-                bundle.feedbackSession, getInstructorFeedbackSessionEditLink(),
+                bundle.getFeedbackSession(), getInstructorFeedbackSessionEditLink(),
                 getInstructorFeedbackSessionPublishAndUnpublishAction(), selectedSection,
                 isMissingResponsesShown, isStatsShown());
     }
 
     public InstructorFeedbackResultsFilterPanel getFilterPanel() {
         return new InstructorFeedbackResultsFilterPanel(
-                isStatsShown(), bundle.feedbackSession, isAllSectionsSelected(), selectedSection,
+                isStatsShown(), bundle.getFeedbackSession(), isAllSectionsSelected(), selectedSection,
                 isGroupedByTeam(), sortType, getInstructorFeedbackSessionResultsLink(),
                 getSections(), isMissingResponsesShown);
     }
 
     public InstructorFeedbackResultsNoResponsePanel getNoResponsePanel() {
-        return new InstructorFeedbackResultsNoResponsePanel(bundle.responseStatus,
+        return new InstructorFeedbackResultsNoResponsePanel(bundle.getResponseStatus(),
                                                             buildModerateButtonsForNoResponsePanel());
     }
 
@@ -1688,12 +1688,12 @@ public class InstructorFeedbackResultsPageData extends PageData {
     public boolean isLargeNumberOfResponses() {
         boolean isQuestionViewType = viewType == InstructorFeedbackResultsPageViewType.QUESTION;
         return isQuestionViewType && isLargeNumberOfRespondents() && isAllSectionsSelected()
-                || !bundle.isComplete;
+                || !bundle.isComplete();
     }
 
     public boolean isLargeNumberOfRespondents() {
-        int numRespondents = bundle.feedbackSession.getRespondingInstructorList().size()
-                           + bundle.feedbackSession.getRespondingStudentList().size();
+        int numRespondents = bundle.getFeedbackSession().getRespondingInstructorList().size()
+                           + bundle.getFeedbackSession().getRespondingStudentList().size();
         return isLargeNumberOfRespondents
             || numRespondents > RESPONDENTS_LIMIT_FOR_AUTOLOADING;
     }
