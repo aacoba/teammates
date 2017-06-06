@@ -31,7 +31,12 @@ import teammates.logic.core.InstructorsLogic;
 import teammates.logic.core.StudentsLogic;
 import teammates.ui.template.InstructorFeedbackResultsResponseRow;
 
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+
 public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
+    private final String other = "Other";
     private int numOfMsqChoices;
     private List<String> msqChoices;
     private boolean otherEnabled;
@@ -41,7 +46,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
         super(FeedbackQuestionType.MSQ);
 
         this.numOfMsqChoices = 0;
-        this.msqChoices = new ArrayList<String>();
+        this.msqChoices = new ArrayList<>();
         this.otherEnabled = false;
         this.generateOptionsFor = FeedbackParticipantType.NONE;
     }
@@ -50,8 +55,8 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
     public boolean extractQuestionDetails(
             Map<String, String[]> requestParameters,
             FeedbackQuestionType questionType) {
-        int numOfMsqChoices = 0;
-        List<String> msqChoices = new LinkedList<String>();
+        int numberOfMsqChoices = 0;
+        List<String> msqChoicesList = new LinkedList<String>();
         boolean msqOtherEnabled = false;
 
         String otherOptionFlag =
@@ -77,12 +82,12 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
                         HttpRequestHelper.getValueFromParamMap(
                                 requestParameters, Const.ParamsNames.FEEDBACK_QUESTION_MSQCHOICE + "-" + i);
                 if (msqChoice != null && !msqChoice.trim().isEmpty()) {
-                    msqChoices.add(msqChoice);
-                    numOfMsqChoices++;
+                    msqChoicesList.add(msqChoice);
+                    numberOfMsqChoices++;
                 }
             }
 
-            setMsqQuestionDetails(numOfMsqChoices, msqChoices, msqOtherEnabled);
+            setMsqQuestionDetails(numberOfMsqChoices, msqChoicesList, msqOtherEnabled);
         } else {
             setMsqQuestionDetails(FeedbackParticipantType.valueOf(generatedMsqOptions));
         }
@@ -252,53 +257,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
     }
 
     private List<String> generateOptionList(String courseId) {
-        List<String> optionList = new ArrayList<String>();
-
-        switch (generateOptionsFor) {
-        case NONE:
-            optionList = msqChoices;
-            break;
-        case STUDENTS:
-            List<StudentAttributes> studentList =
-                    StudentsLogic.inst().getStudentsForCourse(courseId);
-
-            for (StudentAttributes student : studentList) {
-                optionList.add(student.name + " (" + student.team + ")");
-            }
-
-            Collections.sort(optionList);
-            break;
-        case TEAMS:
-            try {
-                List<TeamDetailsBundle> teamList =
-                        CoursesLogic.inst().getTeamsForCourse(courseId);
-
-                for (TeamDetailsBundle team : teamList) {
-                    optionList.add(team.name);
-                }
-
-                Collections.sort(optionList);
-            } catch (EntityDoesNotExistException e) {
-                Assumption.fail("Course disappeared");
-            }
-            break;
-        case INSTRUCTORS:
-            List<InstructorAttributes> instructorList =
-                    InstructorsLogic.inst().getInstructorsForCourse(
-                            courseId);
-
-            for (InstructorAttributes instructor : instructorList) {
-                optionList.add(instructor.name);
-            }
-
-            Collections.sort(optionList);
-            break;
-        default:
-            Assumption.fail("Trying to generate options for neither students, teams nor instructors");
-            break;
-        }
-
-        return optionList;
+        return getOptionStrings(courseId, generateOptionsFor, msqChoices);
     }
 
     @Override
@@ -371,7 +330,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
 
             if (otherEnabled) {
                 String optionFragment =
-                        Templates.populateTemplate(optionFragmentTemplate, Slots.MSQ_CHOICE_VALUE, "Other");
+                        Templates.populateTemplate(optionFragmentTemplate, Slots.MSQ_CHOICE_VALUE, other);
                 optionListHtml.append(optionFragment);
             }
 
@@ -412,7 +371,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
         }
 
         if (otherEnabled) {
-            answerFrequency.put("Other", 0);
+            answerFrequency.put(other, 0);
         }
 
         int numChoicesSelected = 0;
@@ -424,11 +383,11 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
             String otherAnswer = "";
 
             if (isOtherOptionAnswer) {
-                if (!answerFrequency.containsKey("Other")) {
-                    answerFrequency.put("Other", 0);
+                if (!answerFrequency.containsKey(other)) {
+                    answerFrequency.put(other, 0);
                 }
 
-                answerFrequency.put("Other", answerFrequency.get("Other") + 1);
+                answerFrequency.put(other, answerFrequency.get(other) + 1);
 
                 numChoicesSelected++;
                 // remove other answer temporarily to calculate stats for other options
@@ -491,7 +450,7 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
         }
 
         if (otherEnabled) {
-            answerFrequency.put("Other", 0);
+            answerFrequency.put(other, 0);
         }
 
         int numChoicesSelected = 0;
@@ -504,10 +463,10 @@ public class FeedbackMsqQuestionDetails extends FeedbackQuestionDetails {
             String otherAnswer = "";
 
             if (isOtherOptionAnswer) {
-                if (!answerFrequency.containsKey("Other")) {
-                    answerFrequency.put("Other", 0);
+                if (!answerFrequency.containsKey(other)) {
+                    answerFrequency.put(other, 0);
                 }
-                answerFrequency.put("Other", answerFrequency.get("Other") + 1);
+                answerFrequency.put(other, answerFrequency.get(other) + 1);
 
                 numChoicesSelected++;
                 // remove other answer temporarily to calculate stats for other options
