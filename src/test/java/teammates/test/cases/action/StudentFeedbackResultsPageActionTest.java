@@ -189,20 +189,20 @@ public class StudentFeedbackResultsPageActionTest extends BaseActionTest {
          * To solve that, verify that the time elapsed is less than one second (or else the test
          * fails after all) and if it does, change the value in the dataBundle to match.
          */
-        long pageDataResultsVisibleFromTime = pageData.getBundle().feedbackSession.getResultsVisibleFromTime().getTime();
+        long pageDataResultsVisibleFromTime = pageData.getBundle().getFeedbackSession().getResultsVisibleFromTime().getTime();
         long dataBundleResultsVisibleFromTime = dataBundle.feedbackSessions.get("session1InCourse1")
                                                                            .getResultsVisibleFromTime().getTime();
         long toleranceTimeInMs = 1000;
         if (dataBundleResultsVisibleFromTime - pageDataResultsVisibleFromTime < toleranceTimeInMs) {
             // change to the value that will never make the test fail
             dataBundle.feedbackSessions.get("session1InCourse1").setResultsVisibleFromTime(
-                    pageData.getBundle().feedbackSession.getResultsVisibleFromTime());
+                    pageData.getBundle().getFeedbackSession().getResultsVisibleFromTime());
         }
 
         List<FeedbackSessionAttributes> expectedInfoList = new ArrayList<FeedbackSessionAttributes>();
         List<FeedbackSessionAttributes> actualInfoList = new ArrayList<FeedbackSessionAttributes>();
         expectedInfoList.add(dataBundle.feedbackSessions.get("session1InCourse1"));
-        actualInfoList.add(pageData.getBundle().feedbackSession);
+        actualInfoList.add(pageData.getBundle().getFeedbackSession());
 
         AssertHelper.assertSameContentIgnoreOrder(expectedInfoList, actualInfoList);
         assertEquals(student1InCourse1.googleId, pageData.account.googleId);

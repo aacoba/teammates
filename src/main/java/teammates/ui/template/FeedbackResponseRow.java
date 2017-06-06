@@ -21,7 +21,7 @@ public class FeedbackResponseRow {
     public FeedbackResponseRow(int fbIndex, int personIndex, String personType,
                                FeedbackResponseAttributes response, FeedbackSessionResultsBundle results) {
         String questionId = response.feedbackQuestionId;
-        FeedbackQuestionAttributes question = results.questions.get(questionId);
+        FeedbackQuestionAttributes question = results.getQuestions().get(questionId);
         FeedbackQuestionDetails questionDetails = question.getQuestionDetails();
         this.questionNumber = question.questionNumber;
         this.questionText = results.getQuestionText(questionId);
@@ -34,7 +34,7 @@ public class FeedbackResponseRow {
             this.responseText = results.getResponseAnswerHtml(response, question);
         }
         this.responseComments = new ArrayList<FeedbackResponseCommentRow>();
-        List<FeedbackResponseCommentAttributes> frcs = results.responseComments.get(response.getId());
+        List<FeedbackResponseCommentAttributes> frcs = results.getResponseComments().get(response.getId());
         if (frcs != null) {
             for (FeedbackResponseCommentAttributes frc : frcs) {
                 this.responseComments.add(new FeedbackResponseCommentRow(frc, frc.giverEmail));

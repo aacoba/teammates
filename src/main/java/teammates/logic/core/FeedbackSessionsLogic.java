@@ -853,20 +853,20 @@ public final class FeedbackSessionsLogic {
                     feedbackSessionName, courseId, userEmail, questionId, section);
         }
 
-        if (!results.isComplete) {
+        if (!results.isComplete()) {
             throw new ExceedingRangeException(ERROR_NUMBER_OF_RESPONSES_EXCEEDS_RANGE);
         }
         // sort responses by giver > recipient > qnNumber
-        Collections.sort(results.responses,
+        Collections.sort(results.getResponses(),
                 results.compareByGiverRecipientQuestion);
 
         StringBuilder exportBuilder = new StringBuilder(100);
 
         exportBuilder.append(String.format("Course,%s",
-                             SanitizationHelper.sanitizeForCsv(results.feedbackSession.getCourseId())))
+                             SanitizationHelper.sanitizeForCsv(results.getFeedbackSession().getCourseId())))
                      .append(Const.EOL)
                      .append(String.format("Session Name,%s",
-                             SanitizationHelper.sanitizeForCsv(results.feedbackSession.getFeedbackSessionName())))
+                             SanitizationHelper.sanitizeForCsv(results.getFeedbackSession().getFeedbackSessionName())))
                      .append(Const.EOL);
 
         if (section != null) {

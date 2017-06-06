@@ -140,7 +140,7 @@ public class StudentCommentsPageAction extends Action {
                     logic.getFeedbackSessionResultsForStudent(
                                   fs.getFeedbackSessionName(), courseId, studentEmail, roster);
             removeQuestionsAndResponsesWithoutFeedbackResponseComment(bundle);
-            if (bundle.questions.size() != 0) {
+            if (bundle.getQuestions().size() != 0) {
                 feedbackResultBundles.put(fs.getFeedbackSessionName(), bundle);
             }
         }
@@ -150,8 +150,8 @@ public class StudentCommentsPageAction extends Action {
     private void removeQuestionsAndResponsesWithoutFeedbackResponseComment(FeedbackSessionResultsBundle bundle) {
         List<FeedbackResponseAttributes> responsesWithFeedbackResponseComment =
                 new ArrayList<FeedbackResponseAttributes>();
-        for (FeedbackResponseAttributes fr : bundle.responses) {
-            List<FeedbackResponseCommentAttributes> frComment = bundle.responseComments.get(fr.getId());
+        for (FeedbackResponseAttributes fr : bundle.getResponses()) {
+            List<FeedbackResponseCommentAttributes> frComment = bundle.getResponseComments().get(fr.getId());
             if (frComment != null && !frComment.isEmpty()) {
                 responsesWithFeedbackResponseComment.add(fr);
             }
@@ -159,12 +159,12 @@ public class StudentCommentsPageAction extends Action {
         Map<String, FeedbackQuestionAttributes> questionsWithFeedbackResponseComment =
                 new HashMap<String, FeedbackQuestionAttributes>();
         for (FeedbackResponseAttributes fr : responsesWithFeedbackResponseComment) {
-            FeedbackQuestionAttributes qn = bundle.questions.get(fr.feedbackQuestionId);
+            FeedbackQuestionAttributes qn = bundle.getQuestions().get(fr.feedbackQuestionId);
             if (questionsWithFeedbackResponseComment.get(qn.getId()) == null) {
                 questionsWithFeedbackResponseComment.put(qn.getId(), qn);
             }
         }
-        bundle.questions = questionsWithFeedbackResponseComment;
-        bundle.responses = responsesWithFeedbackResponseComment;
+        bundle.setQuestions(questionsWithFeedbackResponseComment);
+        bundle.setResponses(responsesWithFeedbackResponseComment);
     }
 }
