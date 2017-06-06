@@ -275,7 +275,7 @@ public class InstructorFeedbackResultsPageActionTest extends BaseActionTest {
         action = getAction(paramsWithSortTypeQuestion);
         result = getShowPageResult(action);
         InstructorFeedbackResultsPageData pageData = (InstructorFeedbackResultsPageData) result.data;
-        assertTrue(pageData.getBundle().responses.isEmpty());
+        assertTrue(pageData.getBundle().getResponses().isEmpty());
 
     }
 

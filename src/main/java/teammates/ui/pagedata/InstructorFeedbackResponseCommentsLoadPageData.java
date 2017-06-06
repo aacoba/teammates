@@ -45,7 +45,7 @@ public class InstructorFeedbackResponseCommentsLoadPageData extends PageData {
 
         for (Map.Entry<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>> responseEntries
                  : bundle.getQuestionResponseMap().entrySet()) {
-            FeedbackQuestionAttributes question = bundle.questions.get(responseEntries.getKey().getId());
+            FeedbackQuestionAttributes question = bundle.getQuestions().get(responseEntries.getKey().getId());
             Map<FeedbackParticipantType, Boolean> responseVisibilityMap = getResponseVisibilityMap(question);
 
             List<InstructorFeedbackResponseComment> responseCommentList = buildInstructorFeedbackResponseComments(
@@ -77,11 +77,11 @@ public class InstructorFeedbackResponseCommentsLoadPageData extends PageData {
                     Const.ParamsNames.INSTRUCTOR_PERMISSION_SUBMIT_SESSION_IN_SECTIONS);
 
             List<FeedbackResponseCommentAttributes> feedbackResponseCommentsAttributes =
-                    bundle.responseComments.get(response.getId());
+                    bundle.getResponseComments().get(response.getId());
 
             List<FeedbackResponseCommentRow> frcList = buildFeedbackResponseComments(
                     feedbackResponseCommentsAttributes, question, response, giverName, recipientName,
-                    responseVisibilityMap, bundle.feedbackSession);
+                    responseVisibilityMap, bundle.getFeedbackSession());
 
             FeedbackResponseCommentRow feedbackResponseCommentAdd = buildFeedbackResponseCommentAdd(
                     question, response, responseVisibilityMap, giverName, recipientName);

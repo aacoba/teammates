@@ -64,11 +64,11 @@ public class InstructorFeedbackResponseCommentsLoadAction extends Action {
         removeQuestionsAndResponsesIfNotAllowed(bundle);
         removeQuestionsAndResponsesWithoutFeedbackResponseComment(bundle);
 
-        return bundle.questions.isEmpty() ? null : bundle;
+        return bundle.getQuestions().isEmpty() ? null : bundle;
     }
 
     private void removeQuestionsAndResponsesIfNotAllowed(FeedbackSessionResultsBundle bundle) {
-        Iterator<FeedbackResponseAttributes> iter = bundle.responses.iterator();
+        Iterator<FeedbackResponseAttributes> iter = bundle.getResponses().iterator();
         while (iter.hasNext()) {
             FeedbackResponseAttributes fdr = iter.next();
             boolean canInstructorViewSessionInGiverSection =
@@ -89,8 +89,8 @@ public class InstructorFeedbackResponseCommentsLoadAction extends Action {
     private void removeQuestionsAndResponsesWithoutFeedbackResponseComment(FeedbackSessionResultsBundle bundle) {
         List<FeedbackResponseAttributes> responsesWithFeedbackResponseComment =
                 new ArrayList<FeedbackResponseAttributes>();
-        for (FeedbackResponseAttributes fr : bundle.responses) {
-            List<FeedbackResponseCommentAttributes> frComment = bundle.responseComments.get(fr.getId());
+        for (FeedbackResponseAttributes fr : bundle.getResponses()) {
+            List<FeedbackResponseCommentAttributes> frComment = bundle.getResponseComments().get(fr.getId());
             if (frComment != null && !frComment.isEmpty()) {
                 responsesWithFeedbackResponseComment.add(fr);
             }
@@ -98,12 +98,12 @@ public class InstructorFeedbackResponseCommentsLoadAction extends Action {
         Map<String, FeedbackQuestionAttributes> questionsWithFeedbackResponseComment =
                 new HashMap<String, FeedbackQuestionAttributes>();
         for (FeedbackResponseAttributes fr : responsesWithFeedbackResponseComment) {
-            FeedbackQuestionAttributes qn = bundle.questions.get(fr.feedbackQuestionId);
+            FeedbackQuestionAttributes qn = bundle.getQuestions().get(fr.feedbackQuestionId);
             if (!questionsWithFeedbackResponseComment.containsKey(qn.getId())) {
                 questionsWithFeedbackResponseComment.put(qn.getId(), qn);
             }
         }
-        bundle.questions = questionsWithFeedbackResponseComment;
-        bundle.responses = responsesWithFeedbackResponseComment;
+        bundle.setQuestions(questionsWithFeedbackResponseComment);
+        bundle.setResponses(responsesWithFeedbackResponseComment);
     }
 }
