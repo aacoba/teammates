@@ -1,5 +1,6 @@
 package teammates.common.datatransfer;
 
+import teammates.common.exception.InternalAssertionException;
 import teammates.common.util.Const;
 import teammates.common.util.Logger;
 import teammates.common.util.StringHelper;
@@ -109,7 +110,7 @@ public class TeamEvalResult {
         int[][] output = new int[teamSize][teamSize];
         for (int i = 0; i < teamSize; i++) {
             for (int j = 0; j < teamSize; j++) {
-                output = sanitizeIndividualInputByPointsNotGiven(input[i][j]);
+                output[i][j] = sanitizeIndividualInputByPointsNotGiven(input[i][j]);
             }
         }
         return output;
@@ -220,17 +221,17 @@ public class TeamEvalResult {
         int teamSize = input.length;
         double[] output = new double[teamSize];
         for (int j = 0; j < teamSize; j++) {
-            output[j] = multiplyIndividualTeamByFactor(inpunt[j]);
+            output[j] = multiplyIndividualTeamByFactor(factor, input[j]);
         }
         return output;
     }
 
-    private static double multiplyIndividualTeamByFactor(double value) {
+    private static double multiplyIndividualTeamByFactor(double factor, double value) {
         double returnValue;
         if (isSpecialValue((int) value)) {
             returnValue = value;
         } else {
-            retturnValue = Math.abs(factor - 0) < EPSILON ? value : value * factor;
+            returnValue = Math.abs(factor - 0) < EPSILON ? value : value * factor;
         }
         return returnValue;
     }
@@ -238,7 +239,7 @@ public class TeamEvalResult {
     public static double[] purgeValuesCorrespondingToSpecialValuesInFilter(double[] filterArray, double[] valueArray) {
         double[] returnValue = new double[filterArray.length];
         for (int i = 0; i < filterArray.length; i++) {
-            returnValue[i] = purgeIndividualValueCorrespondingToSpecialValuesInFilter(filterArray[i], valueArray[i], returnValue, i);
+            returnValue[i] = purgeIndividualValueCorrespondingToSpecialValuesInFilter(filterArray[i], valueArray[i]);
         }
         return returnValue;
     }
@@ -261,7 +262,7 @@ public class TeamEvalResult {
         double sum = NA;
         for (double value : input) {
 
-            if (!Math.abs(value - NA) < EPSILON) {
+            if (Math.abs(value - NA) > EPSILON) {
                 sum = Math.abs(sum - NA) < EPSILON ? value : sum + value;
             }
         }
@@ -430,11 +431,11 @@ public class TeamEvalResult {
         return getString(array, returnValue, pointDefinition);
     }
 
-    private static String getString(double[][] array, StringBuilder returnValue, teammates.common.datatransfer.TeamEvalResult.PointDefinition pointDefinition) {
+    private static String getString(double[][] array, StringBuilder returnValue, PointDefinition pointDefinition) {
 
         for (int i = 0; i < array.length; i++) {
             returnValue.append(Arrays.toString(array[i])).append(Const.EOL);
-            if (pointDefinition.isSquareArray) {
+            if (pointDefinition.getIsSquareArray()) {
                 continue;
             }
             if (i == pointDefinition.firstDividerLocation || i == pointDefinition.secondDividerLocation || i == pointDefinition.thirdDividerLocation) {
@@ -497,8 +498,12 @@ public class TeamEvalResult {
     private static void verify(String message, boolean condition) {
         // TODO: replace with Assumption.assert*
         if (!condition) {
-            throw new InternalAssertionException("Internal assertion failuer : "
-                    + message);
+            try {
+                throw new InternalAssertionException("Internal assertion failuer : "
+                        + message);
+            } catch (InternalAssertionException e) {
+                e.printStackTrace();
+            }
         }
     }
 

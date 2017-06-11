@@ -1,15 +1,20 @@
 package teammates.common.datatransfer;
 
-private class PointDefinition        {
+public class PointDefinition        {
         private boolean isSquareArray;
-        public int teamSize, firstDividerLocation, secondDividerLocation, ThirdDividerLocaion;
+        public int teamSize, firstDividerLocation, secondDividerLocation, thirdDividerLocation;
 
-        public pointDefinition(boolean isSquareArray, int teamSize)
+        public PointDefinition(boolean isSquareArray, int teamSize)
         {
                 this.isSquareArray = isSquareArray;
-                teamSize = teamSize;
+                this.teamSize = teamSize;
                 firstDividerLocation = teamSize - 1;
                 secondDividerLocation = teamSize * 2 - 1;
                 thirdDividerLocation = secondDividerLocation + 1;
+        }
+
+        public boolean getIsSquareArray()
+        {
+                return isSquareArray;
         }
 }
