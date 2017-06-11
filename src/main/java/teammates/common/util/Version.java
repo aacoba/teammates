@@ -20,7 +20,7 @@ package teammates.common.util;
  * <p>It also support RC versions, which has "rc" appended at the end of the string.
  * For example: 5rc, 4.55rc, 5.55.01rc
  */
-public class Version implements Comparable<Version> {
+public class Version implements Comparable<Version>, VersionControl {
     /**
      * The original String of the version. It could be either XX-XX-XXXXX or XX.XX.XXXX format.
      */
@@ -76,8 +76,10 @@ public class Version implements Comparable<Version> {
      */
     @Override
     public String toString() {
-        return originalRepresentation.replace('-', '.');
+        return toStringWithDots();
     }
+
+    public String toStringWithDots(){ return originalRepresentation.replace('-', '.'); }
 
     /**
      * Converts to String in format XX-XX-XXXX.
@@ -91,7 +93,7 @@ public class Version implements Comparable<Version> {
      * If their length are different, 0s will be appended in front of shorter string until
      * the length are the same.
      */
-    private int compareVersionString(String s1, String s2) {
+    private int compareTwoVersionStrings(String s1, String s2) {
         if (s1 == null && s2 == null) {
             return 0;
         }
@@ -120,17 +122,18 @@ public class Version implements Comparable<Version> {
      * Compares versions by major, minor then by patch.
      * The version with greater major, minor or patch will be smaller.
      */
+
     @Override
     public int compareTo(Version anotherVersion) {
-        int majorComparisonResult = compareVersionString(this.major, anotherVersion.major);
+        int majorComparisonResult = compareTwoVersionStrings(this.major, anotherVersion.major);
         if (majorComparisonResult != 0) {
             return majorComparisonResult;
         }
-        int minorComparisonResult = compareVersionString(this.minor, anotherVersion.minor);
+        int minorComparisonResult = compareTwoVersionStrings(this.minor, anotherVersion.minor);
         if (minorComparisonResult != 0) {
             return minorComparisonResult;
         }
-        int patchComparisonResult = compareVersionString(this.patch, anotherVersion.patch);
+        int patchComparisonResult = compareTwoVersionStrings(this.patch, anotherVersion.patch);
         if (patchComparisonResult != 0) {
             return patchComparisonResult;
         }
