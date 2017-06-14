@@ -1,5 +1,8 @@
 package teammates.common.util;
 
+import com.google.appengine.api.blobstore.*;
+import com.google.appengine.tools.cloudstorage.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -7,21 +10,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.appengine.api.blobstore.BlobInfoFactory;
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreInputStream;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.blobstore.UploadOptions;
-import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-import com.google.appengine.tools.cloudstorage.RetryParams;
-
 /**
  * Holds functions for operations related to Google Cloud Storage.
  */
-public final class GoogleCloudStorageHelper {
+public final class GoogleCloudStorageHelper extends  GoogleCloudStorageHelperService{
 
     private static final int MAX_READING_LENGTH = 900000;
     private static final Logger log = Logger.getLogger();
