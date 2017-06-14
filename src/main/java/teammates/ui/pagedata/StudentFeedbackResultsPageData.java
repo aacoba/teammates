@@ -211,7 +211,7 @@ public class StudentFeedbackResultsPageData extends PageData {
                                                                                String feedbackResponseId) {
 
         List<FeedbackResponseCommentRow> comments = new ArrayList<FeedbackResponseCommentRow>();
-        List<FeedbackResponseCommentAttributes> commentsBundle = bundle.responseComments.get(feedbackResponseId);
+        List<FeedbackResponseCommentAttributes> commentsBundle = bundle.getResponseComments().get(feedbackResponseId);
 
         if (commentsBundle != null) {
             for (FeedbackResponseCommentAttributes comment : commentsBundle) {

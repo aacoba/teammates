@@ -91,7 +91,7 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
         // Need to get actual team name and giver/recipient emails here,
         // only for getting the responseAnswer.
         FeedbackResponseAttributes actualResponse = feedbackSessionResultsBundle.getActualResponse(response);
-        String giverTeamName = feedbackSessionResultsBundle.emailTeamNameTable.get(actualResponse.giver);
+        String giverTeamName = feedbackSessionResultsBundle.getEmailTeamNameTable().get(actualResponse.giver);
         TeamEvalResult teamResult = teamResults.get(giverTeamName);
 
         int giverIndex = teamResult.studentEmails.indexOf(actualResponse.giver);
@@ -101,15 +101,15 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
             if (giverIndex == -1) {
                 log.severe("getContributionQuestionResponseAnswerHtml - giverIndex is -1\n"
                         + "Cannot find giver: " + actualResponse.giver + "\n"
-                        + "CourseId: " + feedbackSessionResultsBundle.feedbackSession.getCourseId() + "\n"
-                        + "Session Name: " + feedbackSessionResultsBundle.feedbackSession.getFeedbackSessionName() + "\n"
+                        + "CourseId: " + feedbackSessionResultsBundle.getFeedbackSession().getCourseId() + "\n"
+                        + "Session Name: " + feedbackSessionResultsBundle.getFeedbackSession().getFeedbackSessionName() + "\n"
                         + "Response Id: " + actualResponse.getId());
             }
             if (recipientIndex == -1) {
                 log.severe("getContributionQuestionResponseAnswerHtml - recipientIndex is -1\n"
                         + "Cannot find recipient: " + actualResponse.recipient + "\n"
-                        + "CourseId: " + feedbackSessionResultsBundle.feedbackSession.getCourseId() + "\n"
-                        + "Session Name: " + feedbackSessionResultsBundle.feedbackSession.getFeedbackSessionName() + "\n"
+                        + "CourseId: " + feedbackSessionResultsBundle.getFeedbackSession().getCourseId() + "\n"
+                        + "Session Name: " + feedbackSessionResultsBundle.getFeedbackSession().getFeedbackSessionName() + "\n"
                         + "Response Id: " + actualResponse.getId());
             }
 
@@ -142,7 +142,7 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
         // Need to get actual team name and giver/recipient emails here,
         // only for getting the responseAnswer.
         FeedbackResponseAttributes actualResponse = feedbackSessionResultsBundle.getActualResponse(response);
-        String giverTeamName = feedbackSessionResultsBundle.emailTeamNameTable.get(actualResponse.giver);
+        String giverTeamName = feedbackSessionResultsBundle.getEmailTeamNameTable().get(actualResponse.giver);
         TeamEvalResult teamResult = teamResults.get(giverTeamName);
 
         int giverIndex = teamResult.studentEmails.indexOf(actualResponse.giver);
@@ -154,15 +154,15 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
             if (giverIndex == -1) {
                 log.severe("getContributionQuestionResponseAnswerCsv - giverIndex is -1\n"
                         + "Cannot find giver: " + actualResponse.giver + "\n"
-                        + "CourseId: " + feedbackSessionResultsBundle.feedbackSession.getCourseId() + "\n"
-                        + "Session Name: " + feedbackSessionResultsBundle.feedbackSession.getFeedbackSessionName() + "\n"
+                        + "CourseId: " + feedbackSessionResultsBundle.getFeedbackSession().getCourseId() + "\n"
+                        + "Session Name: " + feedbackSessionResultsBundle.getFeedbackSession().getFeedbackSessionName() + "\n"
                         + "Response Id: " + actualResponse.getId());
             }
             if (recipientIndex == -1) {
                 log.severe("getContributionQuestionResponseAnswerCsv - recipientIndex is -1\n"
                         + "Cannot find recipient: " + actualResponse.recipient + "\n"
-                        + "CourseId: " + feedbackSessionResultsBundle.feedbackSession.getCourseId() + "\n"
-                        + "Session Name: " + feedbackSessionResultsBundle.feedbackSession.getFeedbackSessionName() + "\n"
+                        + "CourseId: " + feedbackSessionResultsBundle.getFeedbackSession().getCourseId() + "\n"
+                        + "Session Name: " + feedbackSessionResultsBundle.getFeedbackSession().getFeedbackSessionName() + "\n"
                         + "Response Id: " + actualResponse.getId());
             }
         } else {
@@ -184,7 +184,7 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
     public static Map<String, StudentResultSummary> getContribQnStudentResultSummary(FeedbackQuestionAttributes question,
             FeedbackSessionResultsBundle feedbackSessionResultsBundle) {
         Map<String, StudentResultSummary> contribQnStats =
-                feedbackSessionResultsBundle.contributionQuestionStudentResultSummary.get(question.getId());
+                feedbackSessionResultsBundle.getContributionQuestionStudentResultSummary().get(question.getId());
         if (contribQnStats == null) {
             FeedbackContributionQuestionDetails fqcd = (FeedbackContributionQuestionDetails) question.getQuestionDetails();
             contribQnStats = fqcd.getStudentResults(feedbackSessionResultsBundle, question);
@@ -201,7 +201,7 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
                 }
             }
 
-            feedbackSessionResultsBundle.contributionQuestionStudentResultSummary.put(question.getId(), contribQnStats);
+            feedbackSessionResultsBundle.getContributionQuestionStudentResultSummary().put(question.getId(), contribQnStats);
         }
 
         return contribQnStats;
@@ -210,11 +210,11 @@ public class FeedbackContributionResponseDetails extends FeedbackResponseDetails
     public Map<String, TeamEvalResult> getContribQnTeamEvalResult(FeedbackQuestionAttributes question,
             FeedbackSessionResultsBundle feedbackSessionResultsBundle) {
         Map<String, TeamEvalResult> contribQnStats =
-                feedbackSessionResultsBundle.contributionQuestionTeamEvalResults.get(question.getId());
+                feedbackSessionResultsBundle.getContributionQuestionTeamEvalResults().get(question.getId());
         if (contribQnStats == null) {
             FeedbackContributionQuestionDetails fqcd = (FeedbackContributionQuestionDetails) question.getQuestionDetails();
             contribQnStats = fqcd.getTeamEvalResults(feedbackSessionResultsBundle, question);
-            feedbackSessionResultsBundle.contributionQuestionTeamEvalResults.put(question.getId(), contribQnStats);
+            feedbackSessionResultsBundle.getContributionQuestionTeamEvalResults().put(question.getId(), contribQnStats);
         }
 
         return contribQnStats;
