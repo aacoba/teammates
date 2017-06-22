@@ -1134,25 +1134,7 @@ public class FeedbackSessionResultsBundle {
                                            StudentAttributes studentRecipient) {
         FeedbackParticipantType giverType = fqa.giverType;
         FeedbackParticipantType recipientType = fqa.recipientType;
-        List<String> possibleGivers = new ArrayList<>();
-
-        switch (giverType) {
-        case STUDENTS:
-            possibleGivers = getSortedListOfStudentEmails();
-            break;
-        case INSTRUCTORS:
-            possibleGivers = getSortedListOfInstructorEmails();
-            break;
-        case TEAMS:
-            possibleGivers = getSortedListOfTeams();
-            break;
-        case SELF:
-            possibleGivers.add(fqa.creatorEmail);
-            break;
-        default:
-            log.severe(INVALID_GIVER_TYPE_SPECIFIED);
-            break;
-        }
+        List<String> possibleGivers = getPossibleGiversByGiverType(fqa, giverType);
 
         switch (recipientType) {
         case STUDENTS:
@@ -1182,33 +1164,17 @@ public class FeedbackSessionResultsBundle {
      */
     private List<String> getPossibleGiversForInstructor(FeedbackQuestionAttributes fqa) {
         FeedbackParticipantType giverType = fqa.giverType;
-        List<String> possibleGivers = new ArrayList<>();
-
-        switch (giverType) {
-        case STUDENTS:
-            possibleGivers = getSortedListOfStudentEmails();
-            break;
-        case INSTRUCTORS:
-            possibleGivers = getSortedListOfInstructorEmails();
-            break;
-        case TEAMS:
-            possibleGivers = getSortedListOfTeams();
-            break;
-        case SELF:
-            possibleGivers.add(fqa.creatorEmail);
-            break;
-        default:
-            log.severe(INVALID_GIVER_TYPE_SPECIFIED);
-            break;
-        }
-
-        return possibleGivers;
+        return getPossibleGiversByGiverType(fqa, giverType);
     }
-
+    
     public List<String> getPossibleGivers(FeedbackQuestionAttributes fqa) {
         FeedbackParticipantType giverType = fqa.giverType;
+        return getPossibleGiversByGiverType(fqa, giverType);
+    }
+    
+    private List<String> getPossibleGiversByGiverType(FeedbackQuestionAttributes fqa, FeedbackParticipantType giverType) {
         List<String> possibleGivers = new ArrayList<>();
-
+        
         switch (giverType) {
         case STUDENTS:
             possibleGivers = getSortedListOfStudentEmails();
@@ -1220,14 +1186,13 @@ public class FeedbackSessionResultsBundle {
             possibleGivers = getSortedListOfTeams();
             break;
         case SELF:
-            possibleGivers = new ArrayList<>();
             possibleGivers.add(fqa.creatorEmail);
             break;
         default:
             log.severe(INVALID_GIVER_TYPE_SPECIFIED);
             break;
         }
-
+        
         return possibleGivers;
     }
 
@@ -1712,7 +1677,7 @@ public class FeedbackSessionResultsBundle {
         return sortedMap;
     }
 
-    public LinkedHashMap<String, Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>>
+    public Map<String, Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>>
             getQuestionResponseMapByRecipientTeam() {
         LinkedHashMap<String, Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>> sortedMap =
                 new LinkedHashMap<>();
@@ -1745,7 +1710,7 @@ public class FeedbackSessionResultsBundle {
         return sortedMap;
     }
 
-    public LinkedHashMap<String, Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>>
+    public Map<String, Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>>
             getQuestionResponseMapByGiverTeam() {
         LinkedHashMap<String, Map<FeedbackQuestionAttributes, List<FeedbackResponseAttributes>>> sortedMap =
                 new LinkedHashMap<>();
@@ -1877,7 +1842,7 @@ public class FeedbackSessionResultsBundle {
      * @return The responses in this bundle sorted by recipient identifier > giver identifier > question number.
      * @see #getResponsesSortedByRecipient
      */
-    public LinkedHashMap<String, Map<String, List<FeedbackResponseAttributes>>>
+    public Map<String, Map<String, List<FeedbackResponseAttributes>>>
             getResponsesSortedByRecipientGiverQuestion(boolean sortByTeam) {
 
         LinkedHashMap<String, Map<String, List<FeedbackResponseAttributes>>> sortedMap =
