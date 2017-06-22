@@ -51,3 +51,5 @@ gradle-app.setting
 .idea/
 *.iml
 out/
+sonar-project.properties
+.sonar/
