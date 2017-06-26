@@ -314,4 +314,9 @@ public class CommentAttributes extends EntityAttributes implements Comparable<Co
              + "at " + displayTimeAs + ")";
 
     }
+    
+    public String iterateRecipient() {
+        Iterator<String> rec = recipients.iterator();
+        return rec.next();
+    }
 }

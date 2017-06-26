@@ -143,7 +143,7 @@ public final class CommentsLogic {
             CommentAttributes c = iterator.next();
             String firstRecipient = null;
             if (!c.recipients.isEmpty()) {
-                firstRecipient = c.recipients.iterator().next();
+                firstRecipient = c.iterateRecipient();
             }
             // ANONYMOUS_RECEIVER is guaranteed to be the only recipient if the receiver name is hidden
             if (firstRecipient == null || Const.DISPLAYED_NAME_FOR_ANONYMOUS_COMMENT_PARTICIPANT.equals(firstRecipient)) {
